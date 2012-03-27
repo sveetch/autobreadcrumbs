@@ -14,7 +14,7 @@ Installation
 ============
 
 Il suffit de modifier les *settings* de votre projet en rajoutant une ligne pour 
-inscrire l'application dans votre projet :
+inscrire l'application dans votre projet : ::
 
     INSTALLED_APPS = (
         ...
@@ -22,7 +22,7 @@ inscrire l'application dans votre projet :
         ...
     )
 
-Puis inscrire aussi son *context processor* :
+Puis inscrire aussi son *context processor* : ::
 
     TEMPLATE_CONTEXT_PROCESSORS = (
         ...
@@ -86,13 +86,13 @@ de la déclaration dans ``settings.AUTOBREADCRUMBS_TITLES``.
 Exemples
 --------
 
-Exemple simple pour une vue :
+Exemple simple pour une vue : ::
 
     @autobreadcrumb_add(u"Mon zuper zindex")
     def index(request):
         ....
 
-Avec un titre différent pour plusieurs urls qui utilisent la même vue :
+Avec un titre différent pour plusieurs urls qui utilisent la même vue : ::
 
     @autobreadcrumb_add({
         "pages-index1": u"Mon zuper zindex",
@@ -103,7 +103,7 @@ Avec un titre différent pour plusieurs urls qui utilisent la même vue :
 
 .. autobreadcrumbs_titles
 
-Dans les settings :
+Dans les settings : ::
 
     AUTOBREADCRUMBS_TITLES = {
         "pages-index1": u"Mon zuper zindex",
