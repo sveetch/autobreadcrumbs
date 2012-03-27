@@ -1,0 +1,83 @@
+# -*- coding: utf-8 -*-
+"""
+Context Processor
+"""
+from django.conf import settings
+from django.core.urlresolvers import Resolver404, get_resolver
+
+def AutoBreadcrumbsContext(request):
+    """
+    Context processor to find breadcrumbs from current ressource
+    
+    Use ``request.path`` to know the path from which to find the breadcrumbs, cut the 
+    path in segments and check each of them to find breadcrumb details if any.
+    """
+    relative_url = request.path
+    urlresolver = get_resolver(settings.ROOT_URLCONF)
+    breadcrumbs_elements = []
+    current = None
+    
+    # Cut the path in segments
+    # For ``/foo/bar/`` it will give :
+    #      - /
+    #      - /foo
+    #      - /foo/bar
+    path_segments = ['']
+    tmp = ''
+    for segment in relative_url.split('/'):
+        if segment:
+            tmp += segment+'/'
+            path_segments.append(tmp)
+    
+    # Resolve each segment
+    for seg in path_segments:
+        try:
+            resolved = urlresolver.resolve('/'+seg)
+        except Resolver404:
+            pass
+        else:
+            title = name = resolved.url_name
+            if hasattr(resolved.func, "crumb_hided"):
+                continue
+            view_control = None
+            if hasattr(settings, "AUTOBREADCRUMBS_TITLES") and title in getattr(settings, "AUTOBREADCRUMBS_TITLES", {}):
+                title = settings.AUTOBREADCRUMBS_TITLES[title]
+            elif hasattr(resolved.func, "crumb_titles"):
+                title = resolved.func.crumb_titles.get(title, title)
+            elif hasattr(resolved.func, "crumb_title"):
+                title = resolved.func.crumb_title
+            else:
+                continue
+            if title is None:
+                continue
+            # Value with tuple should contain a title and a simple method to control 
+            # access (return ``True`` for granted access and ``False`` for forbidden 
+            # access
+            if not isinstance(title, basestring):
+                title, view_control = title
+                if not view_control(request):
+                    continue
+            breadcrumbs_elements.append( BreadcrumbRessource(seg, name, title, resolved.args, resolved.kwargs) )
+        
+    if len(breadcrumbs_elements)>0:
+        current = breadcrumbs_elements[-1]
+    
+    return {
+        'autobreadcrumbs_elements': breadcrumbs_elements,
+        'autobreadcrumbs_current': current,
+    }
+
+class BreadcrumbRessource(object):
+    def __init__(self, path, name, title, view_args, view_kwargs):
+        self.path = path
+        self.name = name
+        self.title = title
+        self.view_args = view_args
+        self.view_kwargs = view_kwargs
+        
+    def __repr__(self):
+        return "<BreadcrumbRessource: {0}>".format(self.name)
+        
+    def __str__(self):
+        # NOTE: should be __unicode__() because passed paths can be unicode... right ?
+        return self.path
