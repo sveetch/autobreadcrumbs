@@ -1,20 +1,26 @@
+.. _breadcrumb: http://en.wikipedia.org/wiki/Breadcrumb_%28navigation%29#Websites
+
 Introduction
 ============
 
-AutoBreadcrumbs est un module permettant le calcul automatique du chemin d'accès d'une page 
-(*ou chemin de parcours* ) dans les urls. Par exemple : ::
+**AutoBreadcrumbs** is a Django application to automatically build a breadcrumb in your website like 
+this : ::
 
-  Accueil > Mon appli > Ma vue
+  Home > Some page > Some child page
 
-Chaque élément est une miette (*breadcrumb*) du chemin complet contenant un lien pour pouvoir se déplacer 
-rapidement. Le chemins d'accès est une méthode d'ergonomie pour l'utilisateur et lui faciliter sa 
-localisation dans un site.
+Each *crumb* displays a title with a link to represent a view, the crumb tree is determined from the urls map 
+of your project, their titles and links are determined from the associated view entries, either given in the 
+settings or directly added as view attributes (only with view functions).
 
-Installation
-============
+You can download it on his `Github repository <https://github.com/sveetch/autobreadcrumbs>`_ and find his 
+`documentation on DjangoSveetchies <http://sveetchies.sveetch.net/autobreadcrumbs/>`_.
 
-Il suffit de modifier les *settings* de votre projet en rajoutant une ligne pour 
-inscrire l'application dans votre projet : ::
+Install
+=======
+
+In your *settings* file add **AutoBreadcrumbs** to your installed apps :
+
+::
 
     INSTALLED_APPS = (
         ...
@@ -22,7 +28,9 @@ inscrire l'application dans votre projet : ::
         ...
     )
 
-Puis inscrire aussi son *context processor* : ::
+Then register his *context processor* :
+
+::
 
     TEMPLATE_CONTEXT_PROCESSORS = (
         ...
@@ -30,134 +38,131 @@ Puis inscrire aussi son *context processor* : ::
         ...
     )
 
-Utilisation
-===========
+Usage
+=====
 
-Pour fonctionner correctement dans votre projet il vous faudra que toute les urls soit nommées 
-correctement (avec leur attribut ``name``).
+Note that this app will don't work correctly if you don't have a strong organisation in your 
+urls map.
 
-Mais aussi une solide organisation de la map des urls du site car des ressources différentes 
-passant par une même url peuvent provoquer des problèmes. De même pour des parties de 
-l'url qui ne sont pas disponibles pour tout les utilisateurs (à cause d'une restriction 
-d'accès ou autre) qui s'afficheront dans le chemin d'accès alors qu'elles ne le devraient 
-pas (si par exemple n'a pas les permissions pour accéder à une ressource du chemin).
+* You must ensure that all your urls are correctly named (see 
+  `Naming URL patterns <https://docs.djangoproject.com/en/dev/topics/http/urls/#naming-url-patterns>`_);
+* Different views must not use the same url;
+* Regroup your restricted views on some url paths and don't mix them with non-restricted view urls.
 
-Registre des vues
-********************
+View registration
+*****************
 
-Inscription
------------
+Registration
+------------
 
-Le *context processor* effectue une recherche à partir de l'url en cours qu'il découpe en segments 
-qui produiront les miettes du chemin.
+The *context processor* makes a search from the current url that will be splitted in segments which will 
+generate the crumbs.
 
-Pour qu'il reconnaisse une ressource comme une miette de chemin à afficher, votre ressource doit 
-posséder un attribut statique ``title`` (*string*) ou ``titles`` (*dict*) définit sur les 
-méthodes de vues (*views*) (facilité avec l'usage du décorateur). 
+To be registred as a crumb, your view must have a static attribute ``crumb_title`` (*string*) or 
+``crumb_titles`` (*dict*), or an entry in ``settings.AUTOBREADCRUMBS_TITLES`` as a tuple 
+``(url-name, title)``.
 
-Une entrée dans ``settings.AUTOBREADCRUMBS_TITLES`` sous la forme d'un tuple ``(url-name, title)`` 
-fonctionne aussi.
+Attribute ``crumb_titles`` is used to register different URLs on a same view, attribute ``crumb_title`` 
+attends to simply register a view to an unique URL. They are both used only with *view functions*.
 
-Lors de la recherche par le *context processor*, chaque ressource est classée par le nom d'url qui la 
-définit et il les considèrent chacune dans l'ordre suivant :
+The context processor makes his search using the view object and the associated URL name in this step
+order :
 
-#. La ressource a t'elle une entrée ``settings.AUTOBREADCRUMBS_TITLES`` si oui l'utilise et passe à la 
-   ressource suivante;
-#. La ressource a t'elle un attribut ``crumb_titles`` si oui tente d'y récupérer une entrée pour son nom 
-   d'url avant de passer à la ressource suivante;
-#. La ressource a t'elle un attribut ``crumb_title`` si oui l'utilise et passe à la ressource suivante;
-#. Si aucune des conditions suivantes n'ont été remplies, ignore la ressource et passe à la suivante;
+#. If the name has an entry in ``settings.AUTOBREADCRUMBS_TITLES``, then use it;
+#. If the view has an attribute ``crumb_titles``, then try to find the URL name to use it, otherwise continue; 
+#. If the view has an attribute ``crumb_title``, then use it;
 
-L'emplacement du titre peut être un tuple contenant le titre plus une méthode (*function*) de contrôle d'accès 
-prenant le *request* en unique argument et renvoyant *True* pour accepter l'entrée ou *False* pour ignorer la 
-ressource.
+If none of these steps succeeds to find the URL name, the ressource will be ignored and not be displayed 
+in the breadcrumb.
 
-.. NOTE:: Les *Class base views* de Django 1.3.x sont actuellement ignorés par autobreadcrumbs, et les 
-          décorateurs ne fonctionnent pas dessus. Il vous faudra les inscrire dans 
+.. NOTE:: *Class based views* since Django 1.3.x are registrable only in 
           ``settings.AUTOBREADCRUMBS_TITLES``.
 
-Exclusion
----------
+Exclude
+-------
 
-On peut aussi utiliser ``@autobreadcrumb_hide`` pour exclure une vue des miettes, de 
-même indiquer ``None`` en valeur d'un titre l'exclut aussi des miettes, cela fonctionne aussi lors 
-de la déclaration dans ``settings.AUTOBREADCRUMBS_TITLES``.
+The decorator ``@autobreadcrumb_hide`` can be used on view functions to ignore them in breacrumbs,  
+you can also simply define a ``None`` value in titles, this will act in ignoring the ressource.
 
-Exemples
+Examples
 --------
 
-Exemple simple pour une vue : ::
+Simple example with a view function :
 
-    @autobreadcrumb_add(u"Mon zuper zindex")
+::
+
+    @autobreadcrumb_add(u"My index")
     def index(request):
         ....
 
-Avec un titre différent pour plusieurs urls qui utilisent la même vue : ::
+For different URLs with different titles on the same view :
+
+::
 
     @autobreadcrumb_add({
-        "pages-index1": u"Mon zuper zindex",
-        "pages-index2": u"My upper index",
+        "pages-index1": u"My first index",
+        "pages-index2": u"My second index",
     })
     def index(request):
         ....
 
 .. autobreadcrumbs_titles
 
-Dans les settings : ::
+In your settings :
+
+::
 
     AUTOBREADCRUMBS_TITLES = {
         "pages-index1": u"Mon zuper zindex",
         "pages-index2": u"My upper index",
     }
 
-Templates
-*********
+Template context
+****************
 
-Dans vos templates disposant du context global, deux variables supplémentaires 
-(`autobreadcrumbs_elements`_ et `autobreadcrumbs_current`_) seront insérées pour chaque page.
+In all your templates laying that have the global context, two additional variables (`autobreadcrumbs_elements`_ and 
+`autobreadcrumbs_current`_) will be added by the *context processor*.
 
 autobreadcrumbs_elements
 ------------------------
 
-Le chemin d'accès sera disponible dans cette variable du contexte de template et contiendra une liste 
-d'instances de ``BreadcrumbRessource`` pour chaque miette du chemin. Chaque instance de ``BreadcrumbRessource`` 
-contient les attributs suivants :
+This variable will contain the breadcrumb as a list of crumbs in the correct order, where each crumb will be 
+a ``BreadcrumbRessource`` instance. A ``BreadcrumbRessource`` instance contains the following attributes :
 
-* ``path`` : le chemin relatif de l'url qui mène à la ressource;
-* ``name`` : nom de l'url de la ressource;
-* ``title`` : titre à afficher pour la ressource dans le chemin d'accès;
-* ``view_args`` : liste d'arguments passés à l'url de la ressource;
-* ``view_kwargs`` : liste des arguments nommés passés à l'url de la ressource;
+* ``path`` : relative path to the ressource URL;
+* ``name`` : the ressource name (that is the name of the URL linked to the ressource);
+* ``title`` : the ressource title to be displayed;
+* ``view_args`` : argument list given to the ressource view;
+* ``view_kwargs`` : named argument list given to the ressource view;
 
 autobreadcrumbs_current
 -----------------------
 
-Cette variable contiendra l'instance ``BreadcrumbRessource`` de la ressource en cours, elle est identique au dernier 
-élément contenu dans `autobreadcrumbs_elements`_.
+This variable will contains the ``BreadcrumbRessource`` instance of the current crumb, this instance is the same as 
+the last list item in the `autobreadcrumbs_elements`_.
 
 Template tags
 *************
 
-Pour pouvoir les utiliser il faut les importer dans votre templates via la librairie : ::
+These tags are avalaible after loading their library in your templates :
 
-  {% load autobreadcrumb %}
+::
+
+    {% load autobreadcrumb %}
 
 current_title_from_breadcrumbs
-  Retourne simplement le titre de la ressource en cours.
+  This simply returns the title from the current ressource.
 autobreadcrumbs_tag
-  Génère le HTML complet du chemin d'accès à partir du templates ``autobreadcrumbs_tag.html`` déjà fournit. Vous pouvez 
-  le supplanter en créant simplement le votre à la racine de vos templates.
+  Builds the breadcrumb HTML using the ``autobreadcrumbs_tag.html`` template.
 autobreadcrumbs_links
-  Génère directement le HTML du chemin d'accès en utilisant ``settings.AUTOBREADCRUMBS_HTML_LINK`` comme chaîne de 
-  template (elle doit comporter les emplacements de variables nommés correspondant aux attributs disponible dans 
-  ``BreadcrumbRessource``) et ``settings.AUTOBREADCRUMBS_HTML_SEPARATOR`` pour le séparateur entre chaque miette.
+  Builds the breadcrumb HTML using the template strings in ``settings.AUTOBREADCRUMBS_HTML_LINK`` and 
+  ``settings.AUTOBREADCRUMBS_HTML_SEPARATOR``.
 currentwalkthroughto
-  Renvoi le contenu donné entre les balises si la ressource courante passe par la ressource ciblée 
-  (par son urlname). Requiert en argument le nom d'url de la ressource ciblée.
-      
-  Exemple : ::
+  Returns the content tag if the current ressource walk through the given ressource URL name.
   
-      {% currentwalkthroughto 'index' %}Ma page courante passe par l'index{% endcurrentwalkthroughto %}
+  Example : ::
   
-  Si le test échoue (aka la ressource ne passe pas par un chemin au nom d'url ciblé), 
-  le contenu entre les balises n'est pas renvoyé mais une chaine vide à la place.
+      {% currentwalkthroughto 'index' %}This pas walk through the named url 'index'{% endcurrentwalkthroughto %}
+  
+  If the test fail, the tag return an empty string.
+
