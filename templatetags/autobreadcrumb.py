@@ -68,7 +68,7 @@ def current_title_from_breadcrumbs(context):
     Renvoi le titre de l'élément courant
     """
     title = ''
-    if 'autobreadcrumbs_current' in context:
+    if 'autobreadcrumbs_current' in context and context['autobreadcrumbs_current']:
         tpl = template.Template(context['autobreadcrumbs_current'].title)
         title = tpl.render(template.Context(context))
     return title

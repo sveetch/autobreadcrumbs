@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Context Processor
+
+NOTE: Actually this is doing a resolving on each part of url at each request.
+      I think this is not the better for performance, resolving possibility should be 
+      cached at discovering, but HOW TO PROCEED ?
 """
 from django.conf import settings
 from django.core.urlresolvers import Resolver404, get_resolver
+
+from autobreadcrumbs import site
 
 def AutoBreadcrumbsContext(request):
     """
@@ -40,20 +46,28 @@ def AutoBreadcrumbsContext(request):
             if hasattr(resolved.func, "crumb_hided"):
                 continue
             view_control = None
-            if hasattr(settings, "AUTOBREADCRUMBS_TITLES") and title in getattr(settings, "AUTOBREADCRUMBS_TITLES", {}):
+            if site.has_title(title):
+                title = site.get_title(title)
+            elif hasattr(settings, "AUTOBREADCRUMBS_TITLES") and title in getattr(settings, "AUTOBREADCRUMBS_TITLES", {}):
                 title = settings.AUTOBREADCRUMBS_TITLES[title]
+            # DEPRECATED
             elif hasattr(resolved.func, "crumb_titles"):
                 title = resolved.func.crumb_titles.get(title, title)
+            # DEPRECATED
             elif hasattr(resolved.func, "crumb_title"):
                 title = resolved.func.crumb_title
             else:
                 continue
             if title is None:
                 continue
+            # Force unicode on lazy translation else it will trigger an exception with 
+            # templates
+            if hasattr(title, '_proxy____unicode_cast'):
+                title = unicode(title)
             # Value with tuple should contain a title and a simple method to control 
             # access (return ``True`` for granted access and ``False`` for forbidden 
             # access
-            if not isinstance(title, basestring):
+            elif not isinstance(title, basestring):
                 title, view_control = title
                 if not view_control(request):
                     continue

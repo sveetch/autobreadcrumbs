@@ -5,6 +5,8 @@ Decorator to push breadcrumb values on views
 This will useless since Django 1.3 where we start to migrate to *Class based views* 
 which is not very easy to decorate properly. In the same reasons, these decorators doesn't 
 works with *Form Wizards*.
+
+DEPRECATED
 """
 def autobreadcrumb_add(value):
     """
