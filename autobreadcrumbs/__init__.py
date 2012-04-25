@@ -2,13 +2,9 @@
 """
 App default settings and autodiscover
 """
-from django.conf import settings
+__version__ = '0.8.0'
 
 from autobreadcrumbs.sites import BreadcrumbSite, site
-
-# HTML template string used in tag ``{% autobreadcrumbs_links %}``
-AUTOBREADCRUMBS_HTML_LINK = getattr(settings, 'AUTOBREADCRUMBS_HTML_LINK', u'<a href="/{link}">{title}</a>')
-AUTOBREADCRUMBS_HTML_SEPARATOR = getattr(settings, 'AUTOBREADCRUMBS_HTML_SEPARATOR', u' &gt; ')
 
 # ACTION_CHECKBOX_NAME is unused, but should stay since its import from here
 # has been referenced in documentation.

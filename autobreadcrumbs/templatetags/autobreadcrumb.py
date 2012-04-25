@@ -7,7 +7,7 @@ They requires that the context process is enabled
 from django import template
 from django.utils.safestring import mark_safe
 
-from autobreadcrumbs import AUTOBREADCRUMBS_HTML_LINK, AUTOBREADCRUMBS_HTML_SEPARATOR
+from autobreadcrumbs.settings_local import AUTOBREADCRUMBS_HTML_LINK, AUTOBREADCRUMBS_HTML_SEPARATOR
 
 register = template.Library()
 
