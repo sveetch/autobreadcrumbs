@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-App default settings and autodiscover
-"""
 __version__ = '0.8.0'
 
-from autobreadcrumbs.sites import BreadcrumbSite, site
+from autobreadcrumbs.sites import site
 
 # ACTION_CHECKBOX_NAME is unused, but should stay since its import from here
 # has been referenced in documentation.
