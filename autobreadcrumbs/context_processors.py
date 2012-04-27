@@ -46,10 +46,10 @@ def AutoBreadcrumbsContext(request):
             if hasattr(resolved.func, "crumb_hided"):
                 continue
             view_control = None
-            if site.has_title(title):
-                title = site.get_title(title)
-            elif hasattr(settings, "AUTOBREADCRUMBS_TITLES") and title in getattr(settings, "AUTOBREADCRUMBS_TITLES", {}):
+            if hasattr(settings, "AUTOBREADCRUMBS_TITLES") and title in getattr(settings, "AUTOBREADCRUMBS_TITLES", {}):
                 title = settings.AUTOBREADCRUMBS_TITLES[title]
+            elif site.has_title(title):
+                title = site.get_title(title)
             # DEPRECATED
             elif hasattr(resolved.func, "crumb_titles"):
                 title = resolved.func.crumb_titles.get(title, title)
