@@ -1,4 +1,5 @@
 .. _breadcrumb: http://en.wikipedia.org/wiki/Breadcrumb_%28navigation%29#Websites
+.. _Django internationalization system: https://docs.djangoproject.com/en/dev/topics/i18n/
 
 Introduction
 ============
@@ -9,11 +10,15 @@ this : ::
   Home > Some page > Some child page
 
 Each *crumb* displays a title with a link to represent a view, the crumb tree is determined from the urls map 
-of your project, their titles and links are determined from the associated view entries, either given in the 
-settings or directly added as view attributes (only with view functions).
+of your project, their titles and links are determined from the associated view entries in the breadcrumbs 
+registry.
 
-You can download it on his `Github repository <https://github.com/sveetch/autobreadcrumbs>`_ and find his 
-`documentation on DjangoSveetchies <http://sveetchies.sveetch.net/autobreadcrumbs/>`_.
+Links
+*****
+
+* Download his `PyPi package <http://pypi.python.org/pypi/autobreadcrumbs>`_;
+* Clone it on his `Github repository <https://github.com/sveetch/autobreadcrumbs>`_;
+* Documentation and demo to come on his `DjangoSveetchies page <http://sveetchies.sveetch.net/autobreadcrumbs/>`_.
 
 Install
 =======
@@ -38,6 +43,16 @@ Then register his *context processor* :
         ...
     )
 
+And finally, as for the *autodiscover* for the admin site (``django.contrib.admin``), you will have to add these 
+two lines in your ``urls.py`` project :
+
+::
+
+    import autobreadcrumbs
+    autobreadcrumbs.autodiscover()
+
+This is optionnally but if you don't do this, all ``crumbs.py`` file will be ignored.
+
 Usage
 =====
 
@@ -55,67 +70,60 @@ View registration
 Registration
 ------------
 
-The *context processor* makes a search from the current url that will be splitted in segments which will 
-generate the crumbs.
-
-To be registred as a crumb, your view must have a static attribute ``crumb_title`` (*string*) or 
-``crumb_titles`` (*dict*), or an entry in ``settings.AUTOBREADCRUMBS_TITLES`` as a tuple 
-``(url-name, title)``.
-
-Attribute ``crumb_titles`` is used to register different URLs on a same view, attribute ``crumb_title`` 
-attends to simply register a view to an unique URL. They are both used only with *view functions*.
-
-The context processor makes his search using the view object and the associated URL name in this step
-order :
+The *context processor* makes a search from the current url that is splitted in segments which represent 
+the crumbs. For each segment, an entry is searched on his URL name in the breadcrumbs registry in this 
+step order :
 
 #. If the name has an entry in ``settings.AUTOBREADCRUMBS_TITLES``, then use it;
+#. If the name has an entry in a ``crumbs.py`` file in one of your apps, then use it;
 #. If the view has an attribute ``crumb_titles``, then try to find the URL name to use it, otherwise continue; 
 #. If the view has an attribute ``crumb_title``, then use it;
 
 If none of these steps succeeds to find the URL name, the ressource will be ignored and not be displayed 
-in the breadcrumb.
+in the breadcrumbs.
 
-.. NOTE:: *Class based views* since Django 1.3.x are registrable only in 
-          ``settings.AUTOBREADCRUMBS_TITLES``.
+If you need to *hide* a ressource from breadcrumbs, just set his URL name to a *None* value, this will act in 
+ignoring the ressource.
 
-Exclude
--------
+A crumb title value use the Django template system to be rendered and is aware of the context of the template 
+where it is called, so you can use all available template filters, tags and variables in your crumb titles.
 
-The decorator ``@autobreadcrumb_hide`` can be used on view functions to ignore them in breacrumbs,  
-you can also simply define a ``None`` value in titles, this will act in ignoring the ressource.
+.. NOTE:: ``crumb_titles`` and ``crumb_title`` will be deprecated in the next release as the decorators for *view 
+          functions*.
 
-Examples
---------
+App crumbs
+~~~~~~~~~~
 
-Simple example with a view function :
-
-::
-
-    @autobreadcrumb_add(u"My index")
-    def index(request):
-        ....
-
-For different URLs with different titles on the same view :
+Applications should define their crumbs in a ``crumbs.py`` file like this :
 
 ::
 
-    @autobreadcrumb_add({
-        "pages-index1": u"My first index",
-        "pages-index2": u"My second index",
+    from autobreadcrumbs import site
+    from django.utils.translation import ugettext_lazy
+    
+    site.update({
+        ...
+        'documents-index': ugettext_lazy('Sitemap'),
+        ...
     })
-    def index(request):
-        ....
 
-.. autobreadcrumbs_titles
+Note the usage of ``ugettext_lazy`` to get translated strings, if you don't use the `Django internationalization system`_ in your 
+project you can avoid it, but if you plan to use it you must apply ``ugettext_lazy`` on your title strings.
 
-In your settings :
+Project crumbs
+~~~~~~~~~~~~~~
+
+Also you can register crumbs in your project settings :
 
 ::
 
     AUTOBREADCRUMBS_TITLES = {
-        "pages-index1": u"Mon zuper zindex",
-        "pages-index2": u"My upper index",
+        "pages-index1": u"My index",
+        "pages-index2": u"My index alternative",
     }
+
+Crumbs setted in project settings have the higher priority on application crumbs. As for `App crumbs`_ you should use 
+``ugettext_lazy`` on your title strings.
 
 Template context
 ****************
@@ -144,9 +152,7 @@ the last list item in the `autobreadcrumbs_elements`_.
 Template tags
 *************
 
-These tags are avalaible after loading their library in your templates :
-
-::
+These tags are avalaible after loading their library in your templates : ::
 
     {% load autobreadcrumb %}
 
