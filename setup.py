@@ -7,7 +7,7 @@ setup(
     long_description=open('README.rst').read(),
     author='David Thenon',
     author_email='sveetch@gmail.com',
-    url='https://github.com/sveetch/autobreadcrumbs',
+    url='http://pypi.python.org/pypi/autobreadcrumbs',
     license='MIT',
     packages=find_packages(),
     classifiers=[
