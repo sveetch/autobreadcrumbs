@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='autobreadcrumbs',
     version=__import__('autobreadcrumbs').__version__,
-    description='Django application to add breadcrumbs to your pages',
+    description=__import__('autobreadcrumbs').__doc__,
     long_description=open('README.rst').read(),
     author='David Thenon',
     author_email='sveetch@gmail.com',
