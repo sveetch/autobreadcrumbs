@@ -6,9 +6,6 @@ __version__ = '0.8.1'
 
 from autobreadcrumbs.sites import site
 
-# ACTION_CHECKBOX_NAME is unused, but should stay since its import from here
-# has been referenced in documentation.
-
 def autodiscover():
     """
     Auto-discover INSTALLED_APPS admin.py modules and fail silently when
