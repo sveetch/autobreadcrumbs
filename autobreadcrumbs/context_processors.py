@@ -29,7 +29,7 @@ def AutoBreadcrumbsContext(request):
     #      - /foo
     #      - /foo/bar
     path_segments = ['']
-    tmp = ''
+    tmp = '/'
     for segment in relative_url.split('/'):
         if segment:
             tmp += segment+'/'
@@ -38,7 +38,7 @@ def AutoBreadcrumbsContext(request):
     # Resolve each segment
     for seg in path_segments:
         try:
-            resolved = urlresolver.resolve('/'+seg)
+            resolved = urlresolver.resolve(seg)
         except Resolver404:
             pass
         else:
@@ -67,10 +67,10 @@ def AutoBreadcrumbsContext(request):
             # Value with tuple should contain a title and a simple method to control 
             # access (return ``True`` for granted access and ``False`` for forbidden 
             # access
-            elif not isinstance(title, basestring):
-                title, view_control = title
-                if not view_control(request):
-                    continue
+            #~ elif not isinstance(title, basestring):
+                #~ title, view_control = title
+                #~ if not view_control(request):
+                    #~ continue
             breadcrumbs_elements.append( BreadcrumbRessource(seg, name, title, resolved.args, resolved.kwargs) )
         
     if len(breadcrumbs_elements)>0:
