@@ -50,12 +50,6 @@ def AutoBreadcrumbsContext(request):
                 title = settings.AUTOBREADCRUMBS_TITLES[title]
             elif site.has_title(title):
                 title = site.get_title(title)
-            # DEPRECATED
-            elif hasattr(resolved.func, "crumb_titles"):
-                title = resolved.func.crumb_titles.get(title, title)
-            # DEPRECATED
-            elif hasattr(resolved.func, "crumb_title"):
-                title = resolved.func.crumb_title
             else:
                 continue
             if title is None:
@@ -67,10 +61,10 @@ def AutoBreadcrumbsContext(request):
             # Value with tuple should contain a title and a simple method to control 
             # access (return ``True`` for granted access and ``False`` for forbidden 
             # access
-            #~ elif not isinstance(title, basestring):
-                #~ title, view_control = title
-                #~ if not view_control(request):
-                    #~ continue
+            elif isinstance(title, tuple) or isinstance(title, list):
+                title, view_control = title
+                if not view_control(name, request):
+                    continue
             breadcrumbs_elements.append( BreadcrumbRessource(seg, name, title, resolved.args, resolved.kwargs) )
         
     if len(breadcrumbs_elements)>0:

@@ -13,12 +13,17 @@ Each *crumb* displays a title with a link to represent a view, the crumb tree is
 of your project, their titles and links are determined from the associated view entries in the breadcrumbs 
 registry.
 
+Requires
+********
+
+Since the **0.9** version, it requires at least Django 1.5, for Django 1.4 you 
+will have to use the **0.8.1.1**, you can find him in the github releases.
+
 Links
 *****
 
 * Download his `PyPi package <http://pypi.python.org/pypi/autobreadcrumbs>`_;
 * Clone it on his `Github repository <https://github.com/sveetch/autobreadcrumbs>`_;
-* Documentation and demo to come on his `DjangoSveetchies page <http://sveetchies.sveetch.net/autobreadcrumbs/>`_.
 
 Install
 =======
@@ -43,15 +48,17 @@ Then register his *context processor* :
         ...
     )
 
-And finally, as for the *autodiscover* for the admin site (``django.contrib.admin``), you will have to add these 
-two lines in your ``urls.py`` project :
+And finally, as for the *autodiscover* for the admin site 
+(``django.contrib.admin``), you will have to add these two lines in your 
+``urls.py`` project :
 
 ::
 
     import autobreadcrumbs
     autobreadcrumbs.autodiscover()
 
-This is optionnally but if you don't do this, all ``crumbs.py`` file will be ignored.
+This is optional but if you don't do this, all ``crumbs.py`` file will be 
+ignored and only titles defined in ``settings.AUTOBREADCRUMBS_TITLES`` will be used.
 
 Usage
 =====
@@ -76,8 +83,6 @@ step order :
 
 #. If the name has an entry in ``settings.AUTOBREADCRUMBS_TITLES``, then use it;
 #. If the name has an entry in a ``crumbs.py`` file in one of your apps, then use it;
-#. If the view has an attribute ``crumb_titles``, then try to find the URL name to use it, otherwise continue; 
-#. If the view has an attribute ``crumb_title``, then use it;
 
 If none of these steps succeeds to find the URL name, the ressource will be ignored and not be displayed 
 in the breadcrumbs.
@@ -88,8 +93,27 @@ ignoring the ressource.
 A crumb title value use the Django template system to be rendered and is aware of the context of the template 
 where it is called, so you can use all available template filters, tags and variables in your crumb titles.
 
-.. NOTE:: ``crumb_titles`` and ``crumb_title`` will be deprecated in the next release as the decorators for *view 
-          functions*.
+Optionally a crumb entry can be a tuple containing the title and callable 
+function : ::
+
+        'documents-private-doc': (ugettext_lazy('Sitemap'), lambda x,y: True),
+
+The callable function is given two arguments, the url name and the Request 
+object. The callable must return a boolean, ``True`` if the crumb can be 
+displayed or ``False`` if the crumb must be ignored.
+
+This form is generally used to check permission for private views, like this : ::
+
+    def check_crumb_perm(name, request):
+        if name == 'documents-private-doc' and request.user.is_anonymous():
+            return False
+        return True
+    
+    AUTOBREADCRUMBS_TITLES = {
+        ...
+        'documents-private-doc': (ugettext_lazy('Sitemap'), lambda x,y: True),
+        ...
+    }
 
 App crumbs
 ~~~~~~~~~~

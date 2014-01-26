@@ -2,18 +2,15 @@
 """
 Django application to add breadcrumbs to your pages
 """
-__version__ = '0.8.1'
+__version__ = '0.9.0'
 
 from autobreadcrumbs.sites import site
 
-# ACTION_CHECKBOX_NAME is unused, but should stay since its import from here
-# has been referenced in documentation.
-
 def autodiscover():
     """
-    Auto-discover INSTALLED_APPS admin.py modules and fail silently when
-    not present. This forces an import on them to register any admin bits they
-    may want.
+    Auto-discover crumbs defined in crumbs.py modules from installed apps and 
+    fail silently when not present. This forces an import on them to register 
+    any admin bits they may want.
     """
     import copy
     from django.conf import settings
