@@ -28,7 +28,7 @@ def AutoBreadcrumbsContext(request):
     #      - /
     #      - /foo
     #      - /foo/bar
-    path_segments = ['']
+    path_segments = ['/']
     tmp = '/'
     for segment in relative_url.split('/'):
         if segment:
