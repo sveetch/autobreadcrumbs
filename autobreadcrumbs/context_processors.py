@@ -42,18 +42,26 @@ def AutoBreadcrumbsContext(request):
         except Resolver404:
             pass
         else:
+            view_control = None
+            namespace = resolved.namespace
             title = name = resolved.url_name
+            
             if hasattr(resolved.func, "crumb_hided"):
                 continue
-            view_control = None
-            if hasattr(settings, "AUTOBREADCRUMBS_TITLES") and title in getattr(settings, "AUTOBREADCRUMBS_TITLES", {}):
+            
+            if namespace:
+                name = ':'.join([namespace, name])
+                
+            if hasattr(settings, "AUTOBREADCRUMBS_TITLES") and name in getattr(settings, "AUTOBREADCRUMBS_TITLES", {}):
                 title = settings.AUTOBREADCRUMBS_TITLES[title]
-            elif site.has_title(title):
-                title = site.get_title(title)
+            elif site.has_title(name):
+                title = site.get_title(name)
             else:
                 continue
+            
             if title is None:
                 continue
+            
             # Force unicode on lazy translation else it will trigger an exception with 
             # templates
             if hasattr(title, '_proxy____unicode_cast'):
@@ -65,6 +73,8 @@ def AutoBreadcrumbsContext(request):
                 title, view_control = title
                 if not view_control(name, request):
                     continue
+            
+            # Finally append the part to the knowed crumbs list
             breadcrumbs_elements.append( BreadcrumbRessource(seg, name, title, resolved.args, resolved.kwargs) )
         
     if len(breadcrumbs_elements)>0:

@@ -2,7 +2,7 @@
 """
 Django application to add breadcrumbs to your pages
 """
-__version__ = '0.9.1.1'
+__version__ = '1.0'
 
 from autobreadcrumbs.sites import site
 

@@ -69,6 +69,7 @@ urls map.
 * You must ensure that all your urls are correctly named (see 
   `Naming URL patterns <https://docs.djangoproject.com/en/dev/topics/http/urls/#naming-url-patterns>`_);
 * Different views must not use the same url;
+* If you use url namespace, prefix all your crumb url name with it;
 * Regroup your restricted views on some url paths and don't mix them with non-restricted view urls.
 
 View registration
@@ -149,6 +150,20 @@ Also you can register crumbs in your project settings :
 Crumbs setted in project settings have the higher priority on application crumbs. As for `App crumbs`_ you should use 
 ``ugettext_lazy`` on your title strings.
 
+Crumbs with URL namespace
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you use URL namespace on some views, remember to prefixed their crumb's url name with the namespace followed by a colon character, like this : ::
+
+    AUTOBREADCRUMBS_TITLES = {
+        ...
+        "mynamespace:pages-index1": u"My index",
+        ...
+    }
+    
+If you forget to do this, your crumb won't be finded or be filled with a wrong crumb (from an another app view with the same url name but without the namespace).
+
+
 Template context
 ****************
 
@@ -162,7 +177,7 @@ This variable will contain the breadcrumb as a list of crumbs in the correct ord
 a ``BreadcrumbRessource`` instance. A ``BreadcrumbRessource`` instance contains the following attributes :
 
 * ``path`` : relative path to the ressource URL;
-* ``name`` : the ressource name (that is the name of the URL linked to the ressource);
+* ``name`` : the ressource name (that is the name of the URL linked to the ressource), prefixed with the namespace if any;
 * ``title`` : the ressource title to be displayed;
 * ``view_args`` : argument list given to the ressource view;
 * ``view_kwargs`` : named argument list given to the ressource view;
