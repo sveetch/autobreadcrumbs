@@ -2,7 +2,7 @@
 """
 Django application to add breadcrumbs to your pages
 """
-__version__ = '1.0'
+__version__ = '1.1'
 
 from autobreadcrumbs.sites import site
 
@@ -14,7 +14,7 @@ def autodiscover():
     """
     import copy
     from django.conf import settings
-    from django.utils.importlib import import_module
+    from importlib import import_module
     from django.utils.module_loading import module_has_submodule
 
     for app in settings.INSTALLED_APPS:
