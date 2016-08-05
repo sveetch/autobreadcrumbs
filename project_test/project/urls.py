@@ -27,4 +27,9 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(
         template_name="homepage.html"
     ), name='home'),
+
+    # Dummy homepage just for simple ping view
+    url(r'^foo/$', TemplateView.as_view(
+        template_name="page.html"
+    ), name='home'),
 ]
