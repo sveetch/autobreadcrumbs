@@ -135,4 +135,6 @@ TEMPLATES[0]['DIRS'] = (os.path.join(PROJECT_PATH, "templates"),)
 #
 # Default autobreadcrumbs settings
 #
+from autobreadcrumbs.settings import *
 
+TEMPLATES[0]['OPTIONS']['context_processors'].append('autobreadcrumbs.context_processors.AutoBreadcrumbsContext')

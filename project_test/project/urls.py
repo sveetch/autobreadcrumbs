@@ -19,6 +19,8 @@ from django.conf.urls import include, url
 
 from django.views.generic.base import TemplateView
 
+import autobreadcrumbs
+autobreadcrumbs.autodiscover()
 
 urlpatterns = [
     #url(r'^admin/', include(admin.site.urls)),
