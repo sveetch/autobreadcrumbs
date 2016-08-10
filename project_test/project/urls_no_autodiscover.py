@@ -19,9 +19,6 @@ from django.conf.urls import include, url
 
 from django.views.generic.base import TemplateView
 
-import autobreadcrumbs
-autobreadcrumbs.autodiscover()
-
 urlpatterns = [
     #url(r'^admin/', include(admin.site.urls)),
 
@@ -31,7 +28,7 @@ urlpatterns = [
     ), name='home'),
 
     # Foo section
-    url(r'^foo/', include('project.foo.urls', namespace='foo')),
+    url(r'^foo/', include('project.urls_foo', namespace='foo')),
 
     # Bar section is not included and so have no namespace
     url(r'^bar/$', TemplateView.as_view(

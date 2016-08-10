@@ -36,8 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     #'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    'autobreadcrumbs',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -115,6 +113,12 @@ PROJECT_PATH = os.path.join(BASE_DIR, 'project')
 # Absolute filesystem path to the directory that contain tests fixtures files
 TESTS_FIXTURES_DIR = os.path.join('project_test', 'tests', 'data_fixtures')
 
+INSTALLED_APPS = INSTALLED_APPS+(
+    'autobreadcrumbs',
+    'project.foo',
+)
+
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
@@ -130,6 +134,7 @@ MEDIA_URL = '/media/'
 # Example: "/var/www/example.com/static/"
 STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
 
+# Template dir
 TEMPLATES[0]['DIRS'] = (os.path.join(PROJECT_PATH, "templates"),)
 
 #
@@ -138,3 +143,7 @@ TEMPLATES[0]['DIRS'] = (os.path.join(PROJECT_PATH, "templates"),)
 from autobreadcrumbs.settings import *
 
 TEMPLATES[0]['OPTIONS']['context_processors'].append('autobreadcrumbs.context_processors.AutoBreadcrumbsContext')
+
+AUTOBREADCRUMBS_TITLES = {
+    'homepage': 'Home',
+}

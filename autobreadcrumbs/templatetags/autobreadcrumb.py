@@ -8,7 +8,9 @@ from django import template
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
+
 register = template.Library()
+
 
 @register.tag(name="currentwalkthroughto")
 def do_current_walkthrough(parser, token):
@@ -48,6 +50,7 @@ def do_current_walkthrough(parser, token):
     else:
         return CurrentWalkthroughRender(nodelist, *args[1:])
 
+
 class CurrentWalkthroughRender(template.Node):
     def __init__(self, nodelist, urlname):
         self.nodelist = nodelist
@@ -61,6 +64,7 @@ class CurrentWalkthroughRender(template.Node):
                 return output
         return ''
 
+
 @register.simple_tag(takes_context=True)
 def current_title_from_breadcrumbs(context):
     """
@@ -71,6 +75,7 @@ def current_title_from_breadcrumbs(context):
         tpl = template.Template(context['autobreadcrumbs_current'].title)
         title = tpl.render(template.Context(context))
     return title
+
 
 @register.inclusion_tag('autobreadcrumbs_tag.html', takes_context=True)
 def autobreadcrumbs_tag(context):
@@ -90,6 +95,7 @@ def autobreadcrumbs_tag(context):
             )))
         return {'elements': elements}
     return {}
+
 
 @register.simple_tag(takes_context=True)
 def autobreadcrumbs_links(context):
