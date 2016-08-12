@@ -146,4 +146,6 @@ TEMPLATES[0]['OPTIONS']['context_processors'].append('autobreadcrumbs.context_pr
 
 AUTOBREADCRUMBS_TITLES = {
     'homepage': 'Home',
+    'bar': 'Bar',
+    'bar-ometer': "O'meter",
 }

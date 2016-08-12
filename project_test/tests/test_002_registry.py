@@ -1,34 +1,119 @@
 import pytest
 
-from django.core.urlresolvers import reverse
+from autobreadcrumbs.registry import AlreadyRegistered, NotRegistered, BreadcrumbSite
+from autobreadcrumbs.discover import autodiscover
 
-def test_check_breadcrumb_site(client):
-    """Just pinging dummy homepage"""
-    from autobreadcrumbs.sites import site
-    from autobreadcrumbs.sites import BreadcrumbSite
 
-    # Should not be empty when crumbs will be registred in 'project_test'
-    # NOTE: registry don't watch at settings.AUTOBREADCRUMBS_TITLES, only
-    # resolver (ag: the context processor) use it, it's a BAD behavior
-    assert site.get_registry().keys() == [
-        'foo:subfoo:index',
-        'foo:index',
-        'foo:invisible',
-        'foo:pika',
-        'foo:subfoo:plop',
-        'foo:year-month',
-        'foo:pika-chu',
-        'foo:slug',
-        'foo:invisible-chu',
+def test_registry_empty():
+    """Initial empty registry"""
+    registry = BreadcrumbSite()
+
+    assert registry.get_registry() == {}
+
+
+def test_registry_initial():
+    """Registry initially filled"""
+    registry = BreadcrumbSite()
+    registry.update({
+        'foo': 42,
+        'bar': True,
+    })
+
+    assert registry.get_registry() == {
+        'foo': 42,
+        'bar': True,
+    }
+
+
+def test_check_breadcrumb_reset():
+    """Reseting registry"""
+    registry = BreadcrumbSite()
+    registry.update({
+        'foo': 42,
+        'bar': True,
+    })
+    registry.reset()
+
+    assert registry.get_registry() == {}
+
+
+def test_check_breadcrumb_names():
+    """Get registred names"""
+    registry = BreadcrumbSite()
+    registry.update({
+        'foo': 42,
+        'bar': True,
+    })
+
+    assert registry.get_names() == [
+        'bar',
+        'foo',
     ]
 
 
-# NOTE: overriding with pytest.mark.urls does not seem to work as autodiscover
-#     still be used
-#@pytest.mark.urls('project.urls_no_autodiscover')
-#def test_check_breadcrumb_site_empty(client):
-    #"""Just pinging dummy homepage"""
-    #from autobreadcrumbs.sites import site
-    #from autobreadcrumbs.sites import BreadcrumbSite
+@pytest.mark.parametrize("name,exists", [
+    ('foo', True),
+    ('bar', True),
+    ('nope', False),
+    ('Foo', False),
+])
+def test_check_breadcrumb_hastitle(name, exists):
+    """Check if a title exist in registry"""
+    registry = BreadcrumbSite()
+    registry.update({
+        'foo': 42,
+        'bar': True,
+    })
 
-    #assert site.get_registry() == BreadcrumbSite().get_registry()
+    assert registry.has_title(name) == exists
+
+
+def test_check_breadcrumb_gettitle():
+    """Check if a title exist in registry"""
+    registry = BreadcrumbSite()
+    registry.update({
+        'foo': 42,
+        'bar': True,
+    })
+
+    assert registry.get_title('foo') == 42
+
+    with pytest.raises(NotRegistered):
+        registry.get_title('nope')
+
+
+def test_check_breadcrumb_register():
+    """Register title"""
+    registry = BreadcrumbSite()
+
+    registry.register('foo', True)
+    registry.register('bar', 42)
+
+    assert registry.get_names() == [
+        'bar',
+        'foo',
+    ]
+
+    with pytest.raises(AlreadyRegistered):
+        registry.register('foo', True)
+
+
+def test_check_breadcrumb_unregister():
+    """Unregister title"""
+    registry = BreadcrumbSite()
+
+    registry.register('foo', True)
+    registry.register('bar', 42)
+
+    assert registry.get_names() == [
+        'bar',
+        'foo',
+    ]
+
+    registry.unregister('foo')
+    assert registry.get_names() == [
+        'bar',
+    ]
+
+    with pytest.raises(NotRegistered):
+        registry.unregister('plip')

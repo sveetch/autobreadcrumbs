@@ -1,8 +1,8 @@
-from autobreadcrumbs import site
+from autobreadcrumbs.registry import breadcrumbs_registry
 from django.utils.translation import ugettext_lazy
 
 
-site.update({
+breadcrumbs_registry.update({
     'foo:index': ugettext_lazy('Foo'),
     'foo:pika': ugettext_lazy('Pika'),
     'foo:pika-chu': ugettext_lazy('Chu'),

@@ -1,29 +1,36 @@
 # -*- coding: utf-8 -*-
 """
-Site registry for crumb titles
+Site registry for breadcrumb titles
+===================================
+
 """
 class AlreadyRegistered(Exception):
     pass
 
+
 class NotRegistered(Exception):
     pass
 
+
 class BreadcrumbSite(object):
     """
-    Site registry interface
+    Breadcrumbs registry
     """
-    def __init__(self):
-        self._registry = {} # title_key (string) -> title_name (string)
-        self.global_context = None
+    def __init__(self, *args, **kwargs):
+        # title_key (string) -> title_name (string)
+        self._registry = kwargs.get('initial', {})
+
+    def reset(self):
+        """
+        Reset registry to an empty Dict
+        """
+        self._registry = {}
 
     def get_registry(self):
         return self._registry
 
-    def set_context(self, **kwargs):
-        """
-        Définit un contexte de base identique pour toute les instances de contrôleur
-        """
-        self.global_context = kwargs
+    def get_names(self):
+        return sorted(self._registry.keys())
 
     def has_title(self, key):
         return key in self._registry
@@ -31,55 +38,56 @@ class BreadcrumbSite(object):
     def get_title(self, key):
         """
         Get the internationalized title if i18n is used
-        
+
         :type key: string
         :param key: title key
-        
+
         :rtype: string
         :return: the translated title
         """
         if not self.has_title(key):
-            raise NotRegistered('The title key "%s" is not registered' % key)
+            raise NotRegistered('The title key "{}" is not registered'.format(key))
         return self._registry[key]
 
-    def register(self, key, name):
+    def register(self, key, value):
         """
         Register a title key
-        
+
         Raise ``AlreadyRegistered`` if the key is allready registered
-        
+
         :type key: string
         :param key: the title key to add
-        
-        :type name: string
-        :param name: title name
+
+        :type value: string
+        :param value: title value
         """
         if self.has_title(key):
-            raise AlreadyRegistered('The title key "%s" is already registered' % key)
+            raise AlreadyRegistered('The title key "{}" is already registered'.format(key))
         # Instantiate the admin class to save in the registry
-        self._registry[key] = name
+        self._registry[key] = value
 
     def unregister(self, key):
         """
         Unregister a title key
-        
+
         Raise ``NotRegistered`` if the key is not registered
-        
+
         :type key: string
         :param key: the title key to remove
         """
         if not self.has_title(key):
-            raise NotRegistered('The title key "%s" is not registered' % key)
+            raise NotRegistered('The title key "{}" is not registered'.format(key))
         del self._registry[key]
 
-    def update(self, names):
+    def update(self, crumbs):
         """
-        Update the registry with many titles
-        
-        :type names: dict
+        Update registry with many titles
+
+        :type crumbs: dict
         :param key: Titles dict (key -> name)
         """
-        self._registry.update(names)
+        self._registry.update(crumbs)
+
 
 # Default breadcrumbs site
-site = BreadcrumbSite()
+breadcrumbs_registry = BreadcrumbSite()
