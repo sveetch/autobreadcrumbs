@@ -144,8 +144,8 @@ from autobreadcrumbs.settings import *
 
 TEMPLATES[0]['OPTIONS']['context_processors'].append('autobreadcrumbs.context_processors.AutoBreadcrumbsContext')
 
+AUTOBREADCRUMBS_ROOT_CRUMB = 'project.crumbs'
+
 AUTOBREADCRUMBS_TITLES = {
-    'homepage': 'Home',
-    'bar': 'Bar',
-    'bar-ometer': "O'meter",
+    'home': 'Home',
 }

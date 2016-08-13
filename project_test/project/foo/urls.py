@@ -20,12 +20,23 @@ urlpatterns = [
     # Url with some numeric args (year + month)
     url(r'^date/(?P<year>\d{4})/(?P<month>\d{2})/$', TemplateView.as_view(
         template_name="page.html"
-    ), name='year-month'),
+    ), name='date'),
 
     # Url with a string arg
     url(r'^sluggy/(?P<slug>[-\w]+)/$', TemplateView.as_view(
         template_name="page.html"
     ), name='slug'),
+
+    # Controlled by a crumb custom function
+    url(r'^controlled/$', TemplateView.as_view(
+        template_name="page.html"
+    ), name='controlled'),
+    url(r'^controlled/nope/$', TemplateView.as_view(
+        template_name="page.html"
+    ), name='controlled-nope'),
+    url(r'^controlled/yep/$', TemplateView.as_view(
+        template_name="page.html"
+    ), name='controlled-yep'),
 
     # Sub included section with its own namespace
     url(r'^sub/', include('project.foo.sub_urls', namespace='subfoo')),

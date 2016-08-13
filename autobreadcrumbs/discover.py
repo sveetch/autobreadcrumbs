@@ -58,11 +58,14 @@ def discover(module_path, filename):
 
 def autodiscover(filename='crumbs'):
     """
-    Automatic discovering for each enabled module from
-    ``settings.INSTALLED_APPS``.
+    Automatic discovering for available crumbs definitions
 
-    Before looking at enabled modules, registry start from
+    Before looking at crumbs files, registry start from
     ``settings.AUTOBREADCRUMBS_TITLES`` items if setted, else an empty Dict.
+
+    Then it try to load possible root crumbs file defined in
+    ``settings.AUTOBREADCRUMBS_ROOT_CRUMB`` (as a Python path). And finally
+    load each crumbs file finded in ``settings.INSTALLED_APPS``.
 
     Keyword Arguments:
         filename (string): Module filename to search for. Default to
@@ -75,5 +78,9 @@ def autodiscover(filename='crumbs'):
     breadcrumbs_registry.update(getattr(settings, 'AUTOBREADCRUMBS_TITLES',
                                         {}))
 
-    return filter(None, [discover(app, filename=filename)
-            for app in settings.INSTALLED_APPS])
+    apps = list(settings.INSTALLED_APPS)
+    root_crumbs = getattr(settings, 'AUTOBREADCRUMBS_ROOT_CRUMB', None)
+    if root_crumbs:
+        apps = [root_crumbs] + apps
+
+    return filter(None, [discover(app, filename=filename) for app in apps])
