@@ -144,8 +144,11 @@ from autobreadcrumbs.settings import *
 
 TEMPLATES[0]['OPTIONS']['context_processors'].append('autobreadcrumbs.context_processors.AutoBreadcrumbsContext')
 
-AUTOBREADCRUMBS_ROOT_CRUMB = 'project.crumbs'
 
+# Initial project crumbs
 AUTOBREADCRUMBS_TITLES = {
     'home': 'Home',
 }
+
+# Optional project level crumbs (which can be overrided with app crumbs)
+AUTOBREADCRUMBS_ROOT_CRUMB = 'project.crumbs'

@@ -4,10 +4,11 @@ import pytest
 from django.core.urlresolvers import reverse
 
 from autobreadcrumbs.resolver import PathBreadcrumbResolver
-from autobreadcrumbs.discover import autodiscover
 
-# Enforce autodiscovering for all tests
-autodiscover()
+# Autodiscovering is disabled since it allready have be executed
+# previously, see warning from "test_004_autodiscover.py"
+# from autobreadcrumbs.discover import autodiscover
+# autodiscover()
 
 
 @pytest.mark.parametrize("path,segments", [
@@ -85,18 +86,28 @@ def test_cut_path_into_segments(settings, path, segments):
         'Plop',
         ['Home', 'Foo', 'Sub', 'Plop']
     ),
+    (
+        '/foo/controlled-true/yep/',
+        'Control Yep',
+        ['Home', 'Foo', 'Controlled true', 'Control Yep']
+    ),
+    (
+        '/foo/controlled-false/nope/',
+        'Control Nope',
+        ['Home', 'Foo', 'Control Nope']
+    ),
 ])
 def test_resolving_path(settings, rf, url, urlcurrent, urltitles):
-    """Resolve breadcrumb from a path"""
+    """Resolve breadcrumbs from a path"""
     # Forge a request object from url
     request = rf.get(url)
     resolver = PathBreadcrumbResolver(settings.ROOT_URLCONF)
-    results = resolver.resolve(request.path)
+    results = resolver.resolve(request.path, request=request)
 
     elements = results['autobreadcrumbs_elements']
     current = results['autobreadcrumbs_current']
 
-    print [str(item.title) for item in elements]
+    #print [str(item.title) for item in elements]
 
     assert [item.title for item in elements] == urltitles
 

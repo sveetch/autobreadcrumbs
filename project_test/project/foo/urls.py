@@ -27,16 +27,20 @@ urlpatterns = [
         template_name="page.html"
     ), name='slug'),
 
-    # Controlled by a crumb custom function
-    url(r'^controlled/$', TemplateView.as_view(
+    # Controlled by a crumb custom function that return True
+    url(r'^controlled-true/$', TemplateView.as_view(
         template_name="page.html"
-    ), name='controlled'),
-    url(r'^controlled/nope/$', TemplateView.as_view(
+    ), name='controlled-true'),
+    url(r'^controlled-true/yep/$', TemplateView.as_view(
         template_name="page.html"
-    ), name='controlled-nope'),
-    url(r'^controlled/yep/$', TemplateView.as_view(
+    ), name='controlled-true-endpoint'),
+    # Controlled by a crumb custom function that return False
+    url(r'^controlled-false/$', TemplateView.as_view(
         template_name="page.html"
-    ), name='controlled-yep'),
+    ), name='controlled-false'),
+    url(r'^controlled-false/nope/$', TemplateView.as_view(
+        template_name="page.html"
+    ), name='controlled-false-endpoint'),
 
     # Sub included section with its own namespace
     url(r'^sub/', include('project.foo.sub_urls', namespace='subfoo')),

@@ -73,20 +73,13 @@ class PathBreadcrumbResolver(object):
 
         return segments
 
-    def format_title(self, name, value, request=None):
+    def format_title(self, value):
         """
         Manage title format
 
         Arguments:
             name (string): Url name.
-            value (string or tuple): Crumb value for defined url name.
-                Can be a simple string, or a Django lazy unicode or a tuple
-                ``(title, custom_function)``.
-
-                ``custom_function`` take url name
-                and request object as arguments and will return ``False`` to
-                ignore crumb (won't be in breadcrumbs) or ``True`` to keep
-                crumb element.
+            value (string): Crumb value.
 
         Keyword Arguments:
             request (django.http.request.HttpRequest): Optional Django request
@@ -106,11 +99,6 @@ class PathBreadcrumbResolver(object):
         # with templates
         if hasattr(value, '_proxy____unicode_cast'):
             title = unicode(value)
-        # Custom function usage
-        elif (isinstance(value, tuple) or isinstance(value, list)) and request:
-            title, view_control = value
-            if not view_control(name, request):
-                return None
 
         return title
 
@@ -140,12 +128,21 @@ class PathBreadcrumbResolver(object):
         Cut the path in segments and check each of them to find breadcrumb
         details if any.
 
+        Crumb value can be a simple string, a Django lazy unicode or a tuple
+        ``(title, custom_function)``.
+
+        Crumb ``custom_function`` take url name and request object as arguments
+        and will return ``False`` to ignore crumb (won't be in breadcrumbs) or
+        ``True`` to keep crumb element.
+
         Arguments:
             path (string): An url path like ``/foo/bar/``.
 
         Keyword Arguments:
-            request (Django request object): Optional request object that will
-                be given to eventual view control functions.
+            request (django.http.request.HttpRequest): Optional Django request
+                object used with custom crumb function. If not given, crumb
+                functions will be ignored (so the crumb ressources still be
+                available).
 
         Returns:
             Dict: Datas from resolved crumbs:
@@ -180,7 +177,15 @@ class PathBreadcrumbResolver(object):
 
                 # Get defined title
                 title = breadcrumbs_registry.get_title(name)
-                title = self.format_title(name, title, request=request)
+
+                # Custom function usage
+                if (isinstance(title, tuple) or isinstance(title, list)):
+                    title, view_control = title
+                    if request and not view_control(name, request):
+                        continue
+
+                title = self.format_title(title)
+
                 # Ignore element if empty
                 if title is None:
                     continue

@@ -17,13 +17,16 @@ from django.utils.module_loading import module_has_submodule
 from autobreadcrumbs.registry import breadcrumbs_registry
 
 
-def discover(module_path, filename):
+def discover(module_path, filename=None):
     """
     Try to discover and load a ``crumbs.py`` file from given Python path.
 
-    Args:
+    Arguments:
         module_path (string): Python path to scan for ``filename`` module.
-            filename (string): Module filename to search for.
+
+    Keyword Arguments:
+        filename (string): Optional module filename to search for, usually
+            ``crumbs.py``, default to ``None``.
 
     Raises:
         Exception: Raise any occuring exception from loaded Python path.
@@ -34,7 +37,9 @@ def discover(module_path, filename):
         return ``None``.
     """
     mod = import_module(module_path)
-    name = '{path}.{filename}'.format(path=module_path, filename=filename)
+    name = module_path
+    if filename:
+        name = '{path}.{filename}'.format(path=module_path, filename=filename)
 
     # Attempt to import the app's admin module.
     try:
@@ -63,7 +68,7 @@ def autodiscover(filename='crumbs'):
     Before looking at crumbs files, registry start from
     ``settings.AUTOBREADCRUMBS_TITLES`` items if setted, else an empty Dict.
 
-    Then it try to load possible root crumbs file defined in
+    Then it try to load possible root crumb file defined in
     ``settings.AUTOBREADCRUMBS_ROOT_CRUMB`` (as a Python path). And finally
     load each crumbs file finded in ``settings.INSTALLED_APPS``.
 
@@ -75,12 +80,20 @@ def autodiscover(filename='crumbs'):
     Returns:
         list: List of successfully loaded Python paths.
     """
+    paths = []
+
+    # Directly fill registry from initial crumbs setting
     breadcrumbs_registry.update(getattr(settings, 'AUTOBREADCRUMBS_TITLES',
                                         {}))
 
-    apps = list(settings.INSTALLED_APPS)
+    # Fill paths to discover from project level crumb file
     root_crumbs = getattr(settings, 'AUTOBREADCRUMBS_ROOT_CRUMB', None)
     if root_crumbs:
-        apps = [root_crumbs] + apps
+        paths.append(discover(root_crumbs))
 
-    return filter(None, [discover(app, filename=filename) for app in apps])
+    # Fill paths to discover from installed apps
+    apps = list(settings.INSTALLED_APPS)
+
+    paths = paths + [discover(app, filename=filename) for app in apps]
+
+    return filter(None, paths)

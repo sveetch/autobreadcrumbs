@@ -6,14 +6,15 @@ Template context processor
 """
 from django.conf import settings
 
-#from autobreadcrumbs.resolver import PathBreadcrumbResolver
+from autobreadcrumbs.resolver import PathBreadcrumbResolver
+
 
 def AutoBreadcrumbsContext(request):
     """
     Context processor to find breadcrumbs from current ressource
 
-    Use ``request.path`` to know the path from which to find the breadcrumbs, cut the
-    path in segments and check each of them to find breadcrumb details if any.
+    Use ``request.path`` to know the current ressource url path and
+    ``settings.ROOT_URLCONF`` to resolve it.
     """
-    #return PathBreadcrumbResolver(request)
-    return {}
+    r = PathBreadcrumbResolver(settings.ROOT_URLCONF)
+    return r.resolve(request.path, request=request)

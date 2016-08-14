@@ -3,11 +3,6 @@ import pytest
 from autobreadcrumbs.discover import discover, autodiscover
 
 
-#def setup_function(function):
-    #"""Reset registry for every test function from this file"""
-    #breadcrumbs_registry.reset()
-
-
 @pytest.mark.parametrize("module_path,filename,loaded_path", [
     ('project', 'urls', 'project.urls'),
     ('project.foo', 'crumbs', 'project.foo.crumbs'),
@@ -38,8 +33,8 @@ def test_discover_error(module_path, filename):
 @pytest.mark.parametrize("module_path,filename", [
     ('project.foo', 'failure'),
 ])
-def test_autodiscover(module_path, filename):
-    """Attempt exception raised from file with errors"""
+def test_discover_autodiscover(module_path, filename):
+    """Check discovered bread crumbs files"""
     names = autodiscover()
 
-    assert names == ['project.foo.crumbs']
+    assert names == ['project.crumbs', 'project.foo.crumbs']

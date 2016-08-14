@@ -1,7 +1,6 @@
 import pytest
 
 from autobreadcrumbs.registry import AlreadyRegistered, NotRegistered, BreadcrumbSite
-from autobreadcrumbs.discover import autodiscover
 
 
 def test_registry_empty():

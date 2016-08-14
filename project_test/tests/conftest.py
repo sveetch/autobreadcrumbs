@@ -33,6 +33,27 @@ def temp_builds_dir(tmpdir_factory):
     return fn
 
 
+#@pytest.fixture(scope='module')
+#def clean_registry():
+    #"""Perform a reset on registry then relaunch autodiscover"""
+    #from autobreadcrumbs.registry import breadcrumbs_registry
+    #print "Before clean:", breadcrumbs_registry.get_names()
+    #breadcrumbs_registry.reset()
+
+    #return breadcrumbs_registry
+
+
+#@pytest.fixture(scope='function')
+#def reboot_discovering():
+    #"""Perform a reset on registry then relaunch autodiscover"""
+    #from autobreadcrumbs.registry import breadcrumbs_registry
+    #from autobreadcrumbs.discover import autodiscover
+    #print "Before reboot:", breadcrumbs_registry.get_names()
+    #breadcrumbs_registry.reset()
+
+    #return autodiscover()
+
+
 @pytest.fixture(scope="module")
 def storageparameters():
     """Initialize and return parameters storage object (mostly paths) for
