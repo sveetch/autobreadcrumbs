@@ -4,16 +4,8 @@ import pytest
 from autobreadcrumbs.context_processors import AutoBreadcrumbsContext
 
 @pytest.mark.parametrize("url,urlcurrent,urltitles", [
-    (
-        '/',
-        'Home',
-        ['Home']
-    ),
-    (
-        '/bar/',
-        'Bar',
-        ['Home', 'Bar']
-    ),
+    ('/', 'Home', ['Home']),
+    ('/bar/', 'Bar', ['Home', 'Bar']),
 ])
 def test_context(rf, url, urlcurrent, urltitles):
     """Test context_processor"""

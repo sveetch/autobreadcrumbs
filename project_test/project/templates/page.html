@@ -1,9 +1,7 @@
 {% extends "skeleton.html" %}
-{% load autobreadcrumb %}
 
 {% block base_content %}
 <div class="row">
     <h1>This is a page for '{{ request.path }}'</h1>
-    {% autobreadcrumbs_tag %}
 </div>
 {% endblock %}

@@ -11,7 +11,7 @@ from autobreadcrumbs.resolver import PathBreadcrumbResolver
 
 def AutoBreadcrumbsContext(request):
     """
-    Context processor to find breadcrumbs from current ressource
+    Context processor to resolve breadcrumbs from current ressource.
 
     Use ``request.path`` to know the current ressource url path and
     ``settings.ROOT_URLCONF`` to resolve it.

@@ -113,8 +113,8 @@ class PathBreadcrumbResolver(object):
             elements (list): List of breadcrumb elements.
 
         Returns:
-            BreadcrumbRessource: The last element from given ``elements`` if
-                any, else None.
+            BreadcrumbRessource or None: The last element from given
+            ``elements`` if any, else None.
         """
         if len(elements)>0:
             return elements[-1]
