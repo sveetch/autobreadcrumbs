@@ -1,0 +1,2 @@
+.. automodule:: autobreadcrumbs.settings
+    :members:

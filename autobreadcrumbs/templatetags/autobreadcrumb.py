@@ -7,7 +7,7 @@ To use these tags, you will need to load this tag library in your templates: ::
 
     {% load autobreadcrumb %}
 
-Warning:
+Note:
     Template tags require some variable inside Template context that are
     injected from context processor
     ``autobreadcrumbs.context_processors.AutoBreadcrumbsContext``. So you
