@@ -3,16 +3,17 @@
 Template tags
 =============
 
-To use these tags, you will need to load this tag library in your templates: ::
-
-    {% load autobreadcrumb %}
+Every template tag render crumb title using template syntax with given context
+(from your view), so you can use something like ``{{ myvar }}`` in a title for
+a view which have the ``myvar`` variable available in its context. This means
+template blocks and filters can be used also.
 
 Note:
     Template tags require some variable inside Template context that are
     injected from context processor
     ``autobreadcrumbs.context_processors.AutoBreadcrumbsContext``. So you
-    either have to enabled it in your template context processors or injected
-    needed variables from your view.
+    either have to enabled it in your template context processors or inject
+    them from your views.
 """
 from django import template
 from django.conf import settings
@@ -42,8 +43,8 @@ class CurrentWalkthroughRender(template.Node):
         return ''
 
 
-@register.tag(name="currentwalkthroughto")
-def do_current_walkthrough(parser, token):
+@register.tag
+def currentwalkthroughto(parser, token):
     """
     Template tag to output content if current ressource walk through given
     url name.
@@ -53,6 +54,7 @@ def do_current_walkthrough(parser, token):
         to search for in breadcrumbs, if the current ressource crumb walk
         through it, content inside tag will be rendered: ::
 
+            {% load autobreadcrumb %}
             {% currentwalkthroughto 'bar' %}Hello{% endcurrentwalkthroughto %}
     """
     nodelist = parser.parse(('endcurrentwalkthroughto',))
@@ -61,7 +63,7 @@ def do_current_walkthrough(parser, token):
     args = token.split_contents()
     if len(args) < 2:
         raise template.TemplateSyntaxError(("You need to specify an url name "
-                                             "to compare with"))
+                                            "to compare with"))
     else:
         return CurrentWalkthroughRender(nodelist, *args[1:])
 
@@ -72,9 +74,9 @@ def current_title_from_breadcrumbs(context):
     Template tag to output breadcrumb title from current ressource crumb.
 
     Example:
-        You don't need to give arguments, tag will search current ressource
-        within template context: ::
+        ::
 
+            {% load autobreadcrumb %}
             {% current_title_from_breadcrumbs %}
     """
     if context.get('autobreadcrumbs_current', False):
@@ -91,9 +93,9 @@ def autobreadcrumbs_tag(context):
     ``autobreadcrumbs_tag.html``.
 
     Example:
-        You don't need to give arguments, tag will search current ressource
-        within template context: ::
+        ::
 
+            {% load autobreadcrumb %}
             {% autobreadcrumbs_tag %}
     """
     if 'autobreadcrumbs_elements' in context:
@@ -103,8 +105,14 @@ def autobreadcrumbs_tag(context):
             title = tpl.render(template.Context(context))
 
             elements.append(dict(zip(
-                ('url','title','name','view_args','view_kwargs'),
-                (item.path,title,item.name,item.view_args,item.view_kwargs)
+                (
+                    'url', 'title', 'name',
+                    'view_args', 'view_kwargs'
+                ),
+                (
+                    item.path, title, item.name,
+                    item.view_args, item.view_kwargs
+                )
             )))
         return {'elements': elements}
 
@@ -121,9 +129,9 @@ def autobreadcrumbs_links(context):
     Returned HTML is marked as safe (not to escape) for templates.
 
     Example:
-        You don't need to give arguments, tag will search current ressource
-        within template context: ::
+        ::
 
+            {% load autobreadcrumb %}
             {% autobreadcrumbs_links %}
     """
     if 'autobreadcrumbs_elements' in context:

@@ -5,6 +5,7 @@
 .. _Flake8: http://flake8.readthedocs.io
 .. _Sphinx: http://www.sphinx-doc.org
 .. _tox: http://tox.readthedocs.io
+.. _sphinx-autobuild: https://github.com/GaretJax/sphinx-autobuild
 
 ===========
 Development
@@ -52,7 +53,11 @@ Before using it you will need to install tox, it is recommended to install it at
 
     sudo pip install tox
 
-Then go in the autobreadcrumbs module directory, where the setup.py and tox.ini live and execute tox: ::
+Then go in the autobreadcrumbs module directory, where live the ``setup.py`` and ``tox.ini`` files and execute tox: ::
 
     tox
 
+Documentation
+-------------
+
+You should see about `sphinx-autobuild`_ for a watcher which automatically rebuild HTML documentation when you change sources.

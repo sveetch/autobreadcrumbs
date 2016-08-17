@@ -3,11 +3,7 @@
 Breadcrumb resolving
 ====================
 
-NOTE: Actually this is doing a resolving on each part of url at each request.
-      I think this is not the better for performance, resolving possibility
-      should be cached at discovering, but HOW TO PROCEED ?
 """
-from django.conf import settings
 from django.core.urlresolvers import Resolver404, get_resolver
 
 from autobreadcrumbs.registry import breadcrumbs_registry
@@ -116,7 +112,7 @@ class PathBreadcrumbResolver(object):
             BreadcrumbRessource or None: The last element from given
             ``elements`` if any, else None.
         """
-        if len(elements)>0:
+        if len(elements) > 0:
             return elements[-1]
 
         return None

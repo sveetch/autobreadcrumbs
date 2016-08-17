@@ -8,52 +8,40 @@ Install
     pip install autobreadcrumbs
 
 
-Then register the app in your project settings like this :
+#. In your *settings* file add **autobreadcrumbs** to your installed apps:
 
-.. sourcecode:: python
+    .. sourcecode:: python
 
-    INSTALLED_APPS = (
-        ...
-        'rstview',
-        ...
-    )
+        INSTALLED_APPS = (
+            ...
+            'autobreadcrumbs',
+            ...
+        )
 
-Also you can overrides some default settings from your project settings file.
+#. Import default settings:
 
-Once done, your project can use rstview template tags and views.
+    .. sourcecode:: python
 
-In your *settings* file add **AutoBreadcrumbs** to your installed apps :
+        from autobreadcrumbs.settings import *
 
-.. sourcecode:: python
+#. Register its *context processor*:
 
-    INSTALLED_APPS = (
-        ...
-        'autobreadcrumbs',
-        ...
-    )
+    .. sourcecode:: python
 
-Import default settings:
+        TEMPLATE_CONTEXT_PROCESSORS = (
+            ...
+            'autobreadcrumbs.context_processors.AutoBreadcrumbsContext',
+            ...
+        )
 
-.. sourcecode:: python
+    (Order with other context processors don't matter).
 
-    from autobreadcrumbs.settings import *
+#. Finally add these two lines in your main ``urls.py``:
 
-Then register its *context processor* :
+    .. sourcecode:: python
 
-.. sourcecode:: python
+        import autobreadcrumbs
+        autobreadcrumbs.autodiscover()
 
-    TEMPLATE_CONTEXT_PROCESSORS = (
-        ...
-        'autobreadcrumbs.context_processors.AutoBreadcrumbsContext',
-        ...
-    )
-
-Finally, you will have to add these two lines in your ``urls.py`` project :
-
-.. sourcecode:: python
-
-    import autobreadcrumbs
-    autobreadcrumbs.autodiscover()
-
-This is optional but if you don't do this, all ``crumbs.py`` file will be
-ignored and only titles defined in ``settings.AUTOBREADCRUMBS_TITLES`` will be used.
+    This is optional but if you don't do this, all ``crumbs.py`` file will be
+    ignored and only titles defined in ``settings.AUTOBREADCRUMBS_TITLES`` will be used.

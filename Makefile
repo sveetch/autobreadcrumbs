@@ -20,7 +20,7 @@ delpyc:
 	find . -name "*\.pyc"|xargs rm -f
 
 clean: delpyc
-	rm -Rf dist .tox autobreadcrumbs.egg-info .cache project_test/.cache/ project_test/tests/__pycache__/
+	rm -Rf dist .tox autobreadcrumbs.egg-info .cache project_test/.cache/ project_test/tests/__pycache__/ docs/_build
 
 flake:
 	flake8 --show-source autobreadcrumbs
@@ -32,6 +32,9 @@ quality: tests flake
 
 server:
 	cd project_test && ./manage.py runserver 0.0.0.0:8001
+
+docserver:
+	sphinx-autobuild --host 0.0.0.0 --port 9000 docs docs/_build/html
 
 release:
 	python setup.py sdist

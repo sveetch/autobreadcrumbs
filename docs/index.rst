@@ -6,16 +6,16 @@
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
 .. _Pygments: http://pygments.org/
 
-Welcome to rstview's documentation!
-===================================
+Welcome to AutoBreadcrumbs's documentation!
+===========================================
 
-**AutoBreadcrumbs** is a Django application to automatically build a breadcrumb in your website like
-this : ::
+This is a Django application to automatically build breadcrumbs like this : ::
 
   Home > Some page > Some child page
 
-Each *crumb* displays a title with a link to represent a view, crumb tree is determined from the urls map
-of your project, crumbs are linked to view url name (including namespaces).
+Each *crumb* displays a title with a link to represent a view, crumb tree is
+determined from the urls map of your project, crumbs are linked to view url
+name (including namespaces).
 
 Links
 *****
@@ -36,6 +36,7 @@ User’s Guide
    :maxdepth: 2
 
    install.rst
+   overview.rst
    library_references/settings.rst
    library_references/templatetags.rst
 
@@ -45,5 +46,9 @@ Developer’s Guide
 .. toctree::
    :maxdepth: 2
 
+   library_references/registry.rst
+   library_references/discover.rst
+   library_references/resolver.rst
+   library_references/context_processors.rst
    development.rst
    changelog.rst

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Site registry for breadcrumb titles
-===================================
+Site registry for breadcrumb definitions
+========================================
 
 """
+
+
 class AlreadyRegistered(Exception):
     pass
 
@@ -14,80 +16,108 @@ class NotRegistered(Exception):
 
 class BreadcrumbSite(object):
     """
-    Breadcrumbs registry
+    Breadcrumbs site registry
+
+    Keyword Arguments:
+        initial (dict): Optional initial dictionnary of crumbs
+            ``urlname->value``. Default to an empty dict.
     """
     def __init__(self, *args, **kwargs):
-        # title_key (string) -> title_name (string)
         self._registry = kwargs.get('initial', {})
 
     def reset(self):
         """
-        Reset registry to an empty Dict
+        Reset registry to an empty Dict.
         """
         self._registry = {}
 
     def get_registry(self):
+        """
+        Return current registry
+
+        Returns:
+            dict: Currrent registry.
+        """
         return self._registry
 
     def get_names(self):
+        """
+        Return registred crumb url names.
+
+        Returns:
+            list: List of registred crumb url names, sorted with default
+            ``sorted()`` behavior.
+        """
         return sorted(self._registry.keys())
 
-    def has_title(self, key):
-        return key in self._registry
-
-    def get_title(self, key):
+    def has_title(self, name):
         """
-        Get the internationalized title if i18n is used
+        Find if given name is registred as a crumb.
 
-        :type key: string
-        :param key: title key
-
-        :rtype: string
-        :return: the translated title
+        Returns:
+            bool: ``True`` if name exists in current registry, else ``False``.
         """
-        if not self.has_title(key):
-            raise NotRegistered('The title key "{}" is not registered'.format(key))
-        return self._registry[key]
+        return name in self._registry
 
-    def register(self, key, value):
+    def get_title(self, name):
         """
-        Register a title key
+        Get title for given url name.
 
-        Raise ``AlreadyRegistered`` if the key is allready registered
+        Arguments:
+            name (string): Url name.
 
-        :type key: string
-        :param key: the title key to add
-
-        :type value: string
-        :param value: title value
+        Returns:
+            string or tuple: Crumb title.
         """
-        if self.has_title(key):
-            raise AlreadyRegistered('The title key "{}" is already registered'.format(key))
+        if not self.has_title(name):
+            raise NotRegistered(('The url name "{}" is not registered as a '
+                                 'crumb.').format(name))
+        return self._registry[name]
+
+    def register(self, name, value):
+        """
+        Register a crumb for given url name.
+
+        Arguments:
+            name (string): Url name.
+            value (string or tuple): Crumb title to define.
+
+        Raises:
+            ``AlreadyRegistered`` if the url name is allready registered in
+            crumbs.
+        """
+        if self.has_title(name):
+            raise AlreadyRegistered(('The url name "{}" is already registered '
+                                     'as a crumb.').format(name))
         # Instantiate the admin class to save in the registry
-        self._registry[key] = value
+        self._registry[name] = value
 
-    def unregister(self, key):
+    def unregister(self, name):
         """
-        Unregister a title key
+        Unregister a crumb.
 
-        Raise ``NotRegistered`` if the key is not registered
+        Arguments:
+            name (string): Url name.
 
-        :type key: string
-        :param key: the title key to remove
+        Raises:
+            ``NotRegistered`` if given url name is not registred yet.
         """
-        if not self.has_title(key):
-            raise NotRegistered('The title key "{}" is not registered'.format(key))
-        del self._registry[key]
+        if not self.has_title(name):
+            raise NotRegistered(('The url name "{}" is not registered yet as '
+                                 'a crumb.').format(name))
+        del self._registry[name]
 
     def update(self, crumbs):
         """
-        Update registry with many titles
+        Update many crumbs
 
-        :type crumbs: dict
-        :param key: Titles dict (key -> name)
+        This works like the ``Dict.update({..})`` method.
+
+        Arguments:
+            crumbs (dict): A dict of crumbs (``urlname->value``).
         """
         self._registry.update(crumbs)
 
 
-# Default breadcrumbs site
+#: Default breadcrumbs site registry for a Django instance.
 breadcrumbs_registry = BreadcrumbSite()

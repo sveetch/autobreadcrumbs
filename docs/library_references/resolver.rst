@@ -1,0 +1,2 @@
+.. automodule:: autobreadcrumbs.resolver
+    :members:

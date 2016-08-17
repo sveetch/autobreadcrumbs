@@ -3,11 +3,8 @@
 Crumb definitions discovering
 =============================
 
-Crumb definitions are registred through files that are loaded as Python module.
-
-So the module should contains some code to update the registry to add new
-definitions.
-
+Crumb definitions are registred through files that are loaded as Python
+modules, where some code can register needed crumbs.
 """
 import copy
 from django.conf import settings

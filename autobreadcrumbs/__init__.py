@@ -2,4 +2,4 @@
 """
 Django application to add breadcrumbs to your pages
 """
-__version__ = '2.0.0-pre.4'
+__version__ = '2.0.0'
