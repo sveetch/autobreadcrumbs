@@ -1,5 +1,5 @@
 .. _breadcrumb: http://en.wikipedia.org/wiki/Breadcrumb_%28navigation%29#Websites
-.. _Django internationalization system: https://docs.djangoproject.com/en/dev/topics/i18n/
+.. _Django: https://www.djangoproject.com/
 
 ===============
 Autobreadcrumbs

@@ -1,15 +1,13 @@
 .. Boussole documentation master file, created by
    sphinx-quickstart on Sun Mar  6 12:12:38 2016.
 
-.. _docutils: http://docutils.sourceforge.net/
+.. _breadcrumbs: http://en.wikipedia.org/wiki/Breadcrumb_%28navigation%29#Websites
 .. _Django: https://www.djangoproject.com/
-.. _reStructuredText: http://docutils.sourceforge.net/rst.html
-.. _Pygments: http://pygments.org/
 
 Welcome to AutoBreadcrumbs's documentation!
 ===========================================
 
-This is a Django application to automatically build breadcrumbs like this : ::
+This is a Django application to automatically build `breadcrumbs`_ like this : ::
 
   Home > Some page > Some child page
 
